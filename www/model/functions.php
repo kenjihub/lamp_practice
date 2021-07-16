@@ -141,7 +141,7 @@ function h($str){
 function get_input($name){
 	if(isset($_POST[$name]) === true){
 		$int = $_POST[$name];
-		if($int === '' || preg_match(‘/^[0-9]$/‘,$int) !== 1){
+		if($int === '' || preg_match('/^[0-9]*$/',$int) === 0){
 			set_error('不正な数値です');
 			return '';
 		}
