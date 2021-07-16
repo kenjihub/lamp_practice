@@ -137,3 +137,18 @@ function is_valid_upload_image($image){
 function h($str){
   return htmlspecialchars($str,ENT_QUOTES,'UTF-8');
 }
+
+function get_input($name){
+	if(isset($_POST[$name]) === true){
+		$int = $_POST[$name];
+		if($int === '' || preg_match(‘/^[0-9]$/‘,$int) !== 1){
+			set_error('不正な数値です');
+			return '';
+		}
+    return $int;
+	} else{
+      set_error('不正な数値です');
+      return '';
+    }
+	
+}

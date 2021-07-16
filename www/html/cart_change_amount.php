@@ -14,10 +14,10 @@ if(is_logined() === false){
 $db = get_db_connect();
 $user = get_login_user($db);
 
-$cart_id = get_post('cart_id');
-$amount = get_post('amount');
+$cart_id = get_input('cart_id');
+$amount = get_input('amount');
 
-if(update_cart_amount($db, $cart_id, $amount)){
+if(update_cart_amount($db,$amount,$cart_id)){
   set_message('購入数を更新しました。');
 } else {
   set_error('購入数の更新に失敗しました。');
