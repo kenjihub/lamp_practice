@@ -60,7 +60,7 @@ function add_cart($db, $user_id, $item_id ) {
   if($cart === false){
     return insert_cart($db, $user_id, $item_id);
   }
-  return update_cart_amount($db, $cart['cart_id'], $cart['amount'] + 1);
+  return update_cart_amount($db, $cart['amount'] + 1, $cart['cart_id']);
 }
 
 function insert_cart($db, $user_id, $item_id, $amount = 1){
