@@ -24,12 +24,16 @@ $status = get_post('status');
 $stock = get_post('stock');
 
 $image = get_file('image');
+$token = get_post('csrf_token');
 
-if(regist_item($db, $name, $price, $stock, $status, $image)){
-  set_message('商品を登録しました。');
-}else {
-  set_error('商品の登録に失敗しました。');
+if(is_valid_csrf_token($token) === true){
+  if(regist_item($db, $name, $price, $stock, $status, $image)){
+    set_message('商品を登録しました。');
+  }else {
+    set_error('商品の登録に失敗しました。');
+  }
+}else{
+  set_error('不正なリクエストです。');
 }
-
 
 redirect_to(ADMIN_URL);
