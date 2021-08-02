@@ -6,7 +6,7 @@
 CREATE TABLE `order_history` (
   `order_id` int(11) NOT NULL PRIMARY KEY,
   `user_id` int(11) NOT NULL,
-  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------

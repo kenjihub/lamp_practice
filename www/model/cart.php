@@ -117,7 +117,9 @@ function purchase_carts($db, $carts){
       set_error($cart['name'] . 'の購入に失敗しました。');
     }
   }
-  
+  if (recording_order_history($db,$carts) === false){
+    return false;
+  }
   delete_user_carts($db, $carts[0]['user_id']);
 }
 
@@ -160,3 +162,41 @@ function validate_cart_purchase($carts){
   return true;
 }
 
+function recording_order_history($db,$carts){
+  try{
+    $db->beginTransaction();
+    try{
+      $sql = "
+        INSERT INTO
+          order_history(
+            user_id
+          )
+        VALUES(:user_id)
+      ";
+      $params = array(':user_id'=>$carts[0]['user_id']);
+      $id = lastinsertid_query($db,$sql,$params);
+      
+      foreach($carts as $cart){
+        $sql = "
+        INSERT INTO
+          order_detail(
+            order_id,
+            item_id,
+            amount,
+            price
+            )
+        VALUES(:order_id,:item_id,:amount,:price)
+      ";
+      $params = array(':order_id'=>$id,':item_id'=>$cart['item_id'],':amount'=>$cart['amount'],':price'=>$cart['price']);
+      execute_query($db, $sql, $params);
+      }
+    $db->commit();
+    } catch (PDOException $e) {
+      $db->rollback();
+      throw $e;
+    }
+  } catch (PDOException $e) {
+    set_error('データベース処理でエラーが発生しました。理由：'.$e->getMessage());
+    return false;
+  }
+}

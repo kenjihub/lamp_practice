@@ -47,3 +47,14 @@ function execute_query($db, $sql, $params = array()){
   }
   return false;
 }
+
+function lastinsertid_query($db, $sql, $params = array()){
+  try{
+    $statement = $db->prepare($sql);
+    $statement->execute($params);
+    return $db->lastInsertId();
+  }catch(PDOException $e){
+    set_error('ID取得に失敗しました。');
+  }
+  return false;
+}
