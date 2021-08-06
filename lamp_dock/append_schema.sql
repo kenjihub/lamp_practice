@@ -28,13 +28,13 @@ CREATE TABLE `order_detail` (
 
 SELECT'
 order_history.order_id,
-order_detail.amount,
-order_detail.price,
+SUM(order_detail.amount*order_detail.price) AS total,
 order_history.created'
 FROM'order_history'
 INNER JOIN 'order_detail'
 ON 'order_history.order_id = order_detail.order_id'
 WHERE 'order_history.user_id = :user_id'
+GROUP BY 'order_history.order_id'
 ORDER BY 'order_history.order_id DESC';
 
 -- --------------------------------------------------------
@@ -44,15 +44,15 @@ ORDER BY 'order_history.order_id DESC';
 
 SELECT`
 order_history.order_id,
-order_detail.amount,
-order_detail.price,
-order_history.created,
-users.name`
+users.name,
+SUM(order_detail.amount*order_detail.price) AS total,
+order_history.created`
 FROM'order_history'
 INNER JOIN 'order_detail'
 ON 'order_history.order_id = order_detail.order_id'
 INNER JOIN 'users'
 ON 'order_history.user_id = users.user_id'
+GROUP BY 'order_history.order_id'
 ORDER BY 'order_history.order_id DESC';
 
 -- --------------------------------------------------------
@@ -62,36 +62,32 @@ ORDER BY 'order_history.order_id DESC';
 -- ORDER BYで新着順に表示する
 
 SELECT`
-order_history.order_id,
-order_detail.amount,
+items.name,
 order_detail.price,
-order_history.created,
-items.name`
+order_detail.amount,
+order_detail.amount*order_detail.price AS subtotal`
 FROM'order_history'
 INNER JOIN 'order_detail'
 ON 'order_history.order_id = order_detail.order_id'
 INNER JOIN 'items'
-ON 'order_order_detail.item_id = items.item_id'
-WHERE 'order_history.user_id = :user_id';
+ON 'order_detail.item_id = items.item_id'
+WHERE 'order_history.user_id = :user_id'
+AND 'order_history.order_id = :order_id';
 
 -- --------------------------------------------------------
 
 -- 【購入詳細画面】＜管理ユーザーに表示する場合＞
--- 全ユーザーの詳細を表示するので、分かりやすいようにユーザーnameも表示する
 
 SELECT`
-order_history.order_id,
-order_detail.amount,
-order_detail.price,
-order_history.created,
 items.name,
-users.name`
+order_detail.price,
+order_detail.amount,
+order_detail.amount*order_detail.price AS subtotal`
 FROM'order_history'
 INNER JOIN 'order_detail'
 ON 'order_history.order_id = order_detail.order_id'
 INNER JOIN 'items'
 ON 'order_order_detail.item_id = items.item_id'
-INNER JOIN 'users'
-ON 'order_history.user_id = users.user_id'
+WHERE 'order_history.order_id = :order_id';
 
 -- --------------------------------------------------------
