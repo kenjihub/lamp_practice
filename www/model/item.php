@@ -22,7 +22,7 @@ function get_item($db, $item_id){
   return fetch_query($db, $sql,$params);
 }
 
-function get_items($db, $is_open = false){
+function get_items($db,$is_open = false, $num){
   $sql = '
     SELECT
       item_id, 
@@ -39,16 +39,23 @@ function get_items($db, $is_open = false){
       WHERE status = 1
     ';
   }
-
-  return fetch_all_query($db, $sql);
+  if($num !== false){
+  $sql .= '
+    LIMIT :num,8
+  ';
+  $params = array(':num'=>$num);
+  return fetch_all_query($db, $sql, $params);
+  }else{
+    return fetch_all_query($db, $sql);
+  }
 }
 
 function get_all_items($db){
   return get_items($db);
 }
 
-function get_open_items($db){
-  return get_items($db, true);
+function get_open_items($db, $num){
+  return get_items($db, true, $num);
 }
 
 function regist_item($db, $name, $price, $stock, $status, $image){
@@ -113,7 +120,7 @@ function update_item_stock($db, $item_id, $stock){
     LIMIT 1
   ";
   $params = array(':stock'=>$stock,':item_id'=>$item_id);
-  return execute_query($db, $sql,$params);
+  return execute_query($db, $sql, $params);
 }
 
 function destroy_item($db, $item_id){
@@ -140,7 +147,7 @@ function delete_item($db, $item_id){
     LIMIT 1
   ";
   $params = array(':item_id'=>$item_id);
-  return execute_query($db, $sql,$params);
+  return execute_query($db, $sql, $params);
 }
 
 
@@ -205,4 +212,31 @@ function is_valid_item_status($status){
     $is_valid = false;
   }
   return $is_valid;
+}
+
+// 追加
+
+// $max= 全体のページ数を取得
+function count_max_page($db,$all){
+  $total_num = count($all);
+  return ceil($total_num / MAX);
+}
+
+// $now= 現在の表示ページ番号を取得
+function get_now_page($page,$max){
+  if(!isset($page)){
+    return (int)1;
+  }elseif($page === 0){
+    return (int)1;
+  //URLにmax件数より大きい数値を打ち込んだ場合
+  }elseif($page > $max){
+    return (int)$max;
+  }else{
+    return (int)$page;
+  }
+}
+
+// $num= LIMIT句の開始位置を取得
+function get_start_number($now){
+  return ($now - 1) * MAX;
 }
